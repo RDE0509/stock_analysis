@@ -1,0 +1,9 @@
+
+streamlit
+geopandas
+streamlit-folium
+matplotlib
+plotly
+seaborn
+geopy
+statsmodels
