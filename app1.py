@@ -1161,7 +1161,7 @@ if not df_stocks.empty:
             payload = f'{{"stock":"{api_symbol}"}}'
 
             headers = {
-                'x-rapidapi-key': "f03ebf3563mshdfa25c755204dc9p1ef90bjsnb590fde9f7f0",
+                'x-rapidapi-key': "8b0ab77af5mshc73fbfdbec7278ap1422fejsnb77c07072aca",
                 'x-rapidapi-host': "yahoo-finance160.p.rapidapi.com",
                 'Content-Type': "application/json"
             }
