@@ -1163,7 +1163,7 @@ if not df_stocks.empty:
             payload = json.dumps({"stock": api_symbol})  # Clean JSON string
 
             headers = {
-                'x-rapidapi-key': "519ebe1f22msh11e830d83c550eap16a595jsnb27081c34438",
+                'x-rapidapi-key': "8b0ab77af5mshc73fbfdbec7278ap1422fejsnb77c07072aca",
                 'x-rapidapi-host': "yahoo-finance160.p.rapidapi.com",
                 'Content-Type': "application/json"
             }
