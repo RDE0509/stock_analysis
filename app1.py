@@ -61,7 +61,7 @@ def load_stock_data():
         return pd.DataFrame({'Symbol': [], 'Company Name': []})
 
 # Function to make API calls
-def fetch_api_data(endpoint, symbol, host="yahoo-finance15.p.rapidapi.com", api_key="519ebe1f22msh11e830d83c550eap16a595jsnb27081c34438"):
+def fetch_api_data(endpoint, symbol, host="yahoo-finance15.p.rapidapi.com", api_key="8b0ab77af5mshc73fbfdbec7278ap1422fejsnb77c07072aca"):
     conn = http.client.HTTPSConnection(host)
     
     headers = {
@@ -83,7 +83,7 @@ def fetch_eps_data(symbol):
     conn = http.client.HTTPSConnection("indian-stock-exchange-api2.p.rapidapi.com")
     
     headers = {
-        'x-rapidapi-key': "519ebe1f22msh11e830d83c550eap16a595jsnb27081c34438",
+        'x-rapidapi-key': "8b0ab77af5mshc73fbfdbec7278ap1422fejsnb77c07072aca",
         'x-rapidapi-host': "indian-stock-exchange-api2.p.rapidapi.com"
     }
     
@@ -101,7 +101,7 @@ def fetch_price_target_data(symbol):
     conn = http.client.HTTPSConnection("indian-stock-exchange-api2.p.rapidapi.com")
     
     headers = {
-        'x-rapidapi-key': "519ebe1f22msh11e830d83c550eap16a595jsnb27081c34438",
+        'x-rapidapi-key': "8b0ab77af5mshc73fbfdbec7278ap1422fejsnb77c07072aca",
         'x-rapidapi-host': "indian-stock-exchange-api2.p.rapidapi.com"
     }
     
