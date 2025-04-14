@@ -1252,7 +1252,7 @@ if not df_stocks.empty:
         st.info("FII data would be loaded from local CSV files. Please ensure 'fii_buying_data_all_pages.csv' is available.")
         
         try:
-            fii_data = pd.read_excel(r'C:\Users\asd\Downloads\stock_analysis_pr\scripts\Stock-Screener124732.xlsx')
+            fii_data = pd.read_excel(r'Stock-Screener124732.xlsx')
             if not fii_data.empty:
                 st.dataframe(fii_data)
             else:
@@ -1266,7 +1266,7 @@ if not df_stocks.empty:
         st.info("Bulk deals data would be loaded from local CSV files. Please ensure 'bulk_deals_within_fii_dii.csv' is available.")
         
         try:
-            bulk_data = pd.read_csv(r'C:\Users\asd\Downloads\stock_analysis_pr\data\Large-deals-BULK-12-Apr-2025.csv')
+            bulk_data = pd.read_csv(r'Large-deals-BULK-12-Apr-2025.csv')
             if not bulk_data.empty:
                 st.dataframe(bulk_data)
             else:
