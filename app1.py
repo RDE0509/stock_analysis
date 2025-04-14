@@ -1151,78 +1151,78 @@ if not df_stocks.empty:
             else:
                 st.error("Failed to fetch price target data. Please try again later.")
     
-    # Tab 8: Market News
-    with tabs[7]:
-        st.header("Market News")
+    # # Tab 8: Market News
+    # with tabs[7]:
+    #     st.header("Market News")
         
-        with st.spinner("Fetching market news..."):
-            conn = http.client.HTTPSConnection("yahoo-finance160.p.rapidapi.com")
+    #     with st.spinner("Fetching market news..."):
+    #         conn = http.client.HTTPSConnection("yahoo-finance160.p.rapidapi.com")
 
-            payload = f'{{"stock":"{api_symbol}"}}'
+    #         payload = f'{{"stock":"{api_symbol}"}}'
 
-            headers = {
-                'x-rapidapi-key': "f03ebf3563mshdfa25c755204dc9p1ef90bjsnb590fde9f7f0",
-                'x-rapidapi-host': "yahoo-finance160.p.rapidapi.com",
-                'Content-Type': "application/json"
-            }
+    #         headers = {
+    #             'x-rapidapi-key': "f03ebf3563mshdfa25c755204dc9p1ef90bjsnb590fde9f7f0",
+    #             'x-rapidapi-host': "yahoo-finance160.p.rapidapi.com",
+    #             'Content-Type': "application/json"
+    #         }
 
-            conn.request("POST", "/stocknews", payload, headers)
+    #         conn.request("POST", "/stocknews", payload, headers)
 
-            res = conn.getresponse()
-            data = res.read()
-            news_data = json.loads(data.decode("utf-8"))
+    #         res = conn.getresponse()
+    #         data = res.read()
+    #         news_data = json.loads(data.decode("utf-8"))
             
-            if news_data:
-                # Add a search/filter option
-                search_term = st.text_input("Search news by keyword")
+    #         if news_data:
+    #             # Add a search/filter option
+    #             search_term = st.text_input("Search news by keyword")
                 
-                filtered_news = news_data
-                if search_term:
-                    filtered_news = [
-                        news for news in news_data 
-                        if search_term.lower() in news.get("content", {}).get("title", "").lower() or
-                           search_term.lower() in news.get("content", {}).get("summary", "").lower()
-                    ]
+    #             filtered_news = news_data
+    #             if search_term:
+    #                 filtered_news = [
+    #                     news for news in news_data 
+    #                     if search_term.lower() in news.get("content", {}).get("title", "").lower() or
+    #                        search_term.lower() in news.get("content", {}).get("summary", "").lower()
+    #                 ]
                 
-                # Display number of news items found
-                st.markdown(f"#### Found {len(filtered_news)} news articles")
+    #             # Display number of news items found
+    #             st.markdown(f"#### Found {len(filtered_news)} news articles")
                 
-                # Create a more visually appealing news layout
-                for i, news in enumerate(filtered_news):
-                    content = news.get("content", {})
+    #             # Create a more visually appealing news layout
+    #             for i, news in enumerate(filtered_news):
+    #                 content = news.get("content", {})
 
-                    title = content.get("title", "News Item")
-                    source = content.get("provider", {}).get("displayName", "Unknown")
-                    published = content.get("pubDate", "Unknown")
-                    summary = content.get("summary", "No content available")
-                    url = content.get("canonicalUrl", {}).get("url", None)
-                    thumbnail_url = content.get("thumbnail", {}).get("originalUrl", None)
+    #                 title = content.get("title", "News Item")
+    #                 source = content.get("provider", {}).get("displayName", "Unknown")
+    #                 published = content.get("pubDate", "Unknown")
+    #                 summary = content.get("summary", "No content available")
+    #                 url = content.get("canonicalUrl", {}).get("url", None)
+    #                 thumbnail_url = content.get("thumbnail", {}).get("originalUrl", None)
 
-                    # Create a card-like layout for each news item
-                    st.markdown(f"""
-                    <div style="background-color: white; padding: 15px; border-radius: 5px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
-                        <h3>{title}</h3>
-                        <p style="color: #666;"><strong>Source:</strong> {source} | <strong>Published:</strong> {published}</p>
-                    """, unsafe_allow_html=True)
+    #                 # Create a card-like layout for each news item
+    #                 st.markdown(f"""
+    #                 <div style="background-color: white; padding: 15px; border-radius: 5px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+    #                     <h3>{title}</h3>
+    #                     <p style="color: #666;"><strong>Source:</strong> {source} | <strong>Published:</strong> {published}</p>
+    #                 """, unsafe_allow_html=True)
                     
-                    # Display the news content in columns if there's a thumbnail
-                    if thumbnail_url:
-                        col1, col2 = st.columns([1, 3])
+    #                 # Display the news content in columns if there's a thumbnail
+    #                 if thumbnail_url:
+    #                     col1, col2 = st.columns([1, 3])
                         
-                        with col1:
-                            st.image(thumbnail_url, use_column_width=True)
+    #                     with col1:
+    #                         st.image(thumbnail_url, use_column_width=True)
                         
-                        with col2:
-                            st.markdown(f"<p>{summary}</p>", unsafe_allow_html=True)
-                    else:
-                        st.markdown(f"<p>{summary}</p>", unsafe_allow_html=True)
+    #                     with col2:
+    #                         st.markdown(f"<p>{summary}</p>", unsafe_allow_html=True)
+    #                 else:
+    #                     st.markdown(f"<p>{summary}</p>", unsafe_allow_html=True)
                     
-                    if url:
-                        st.markdown(f"<a href='{url}' target='_blank'>Read full article</a>", unsafe_allow_html=True)
+    #                 if url:
+    #                     st.markdown(f"<a href='{url}' target='_blank'>Read full article</a>", unsafe_allow_html=True)
                     
-                    st.markdown("</div>", unsafe_allow_html=True)
-            else:
-                st.warning("No news data available for this stock.")
+    #                 st.markdown("</div>", unsafe_allow_html=True)
+    #         else:
+    #             st.warning("No news data available for this stock.")
 
     # Tab 9: FII & Bulk Deals
     with tabs[8]:
