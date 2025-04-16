@@ -61,7 +61,7 @@ def load_stock_data():
         return pd.DataFrame({'Symbol': [], 'Company Name': []})
 
 # Function to make API calls
-def fetch_api_data(endpoint, symbol, host="yahoo-finance15.p.rapidapi.com", api_key="8b0ab77af5mshc73fbfdbec7278ap1422fejsnb77c07072aca"):
+def fetch_api_data(endpoint, symbol, host="yahoo-finance15.p.rapidapi.com", api_key="c299565febmshae8b8ba8255ea7ep15fe05jsn4f3b2df671a3"):
     conn = http.client.HTTPSConnection(host)
     
     headers = {
@@ -83,7 +83,7 @@ def fetch_eps_data(symbol):
     conn = http.client.HTTPSConnection("indian-stock-exchange-api2.p.rapidapi.com")
     
     headers = {
-        'x-rapidapi-key': "8b0ab77af5mshc73fbfdbec7278ap1422fejsnb77c07072aca",
+        'x-rapidapi-key': "c299565febmshae8b8ba8255ea7ep15fe05jsn4f3b2df671a3",
         'x-rapidapi-host': "indian-stock-exchange-api2.p.rapidapi.com"
     }
     
@@ -101,7 +101,7 @@ def fetch_price_target_data(symbol):
     conn = http.client.HTTPSConnection("indian-stock-exchange-api2.p.rapidapi.com")
     
     headers = {
-        'x-rapidapi-key': "8b0ab77af5mshc73fbfdbec7278ap1422fejsnb77c07072aca",
+        'x-rapidapi-key': "c299565febmshae8b8ba8255ea7ep15fe05jsn4f3b2df671a3",
         'x-rapidapi-host': "indian-stock-exchange-api2.p.rapidapi.com"
     }
     
@@ -1161,7 +1161,7 @@ if not df_stocks.empty:
             payload = f'{{"stock":"{api_symbol}"}}'
 
             headers = {
-                'x-rapidapi-key': "8b0ab77af5mshc73fbfdbec7278ap1422fejsnb77c07072aca",
+                'x-rapidapi-key': "c299565febmshae8b8ba8255ea7ep15fe05jsn4f3b2df671a3",
                 'x-rapidapi-host': "yahoo-finance160.p.rapidapi.com",
                 'Content-Type': "application/json"
             }
@@ -1264,7 +1264,7 @@ if not df_stocks.empty:
             conn = http.client.HTTPSConnection("indian-stock-exchange-api2.p.rapidapi.com")
 
             headers = {
-                'x-rapidapi-key': "8b0ab77af5mshc73fbfdbec7278ap1422fejsnb77c07072aca",
+                'x-rapidapi-key': "c299565febmshae8b8ba8255ea7ep15fe05jsn4f3b2df671a3",
                 'x-rapidapi-host': "indian-stock-exchange-api2.p.rapidapi.com"
             }
 
@@ -1305,7 +1305,7 @@ if not df_stocks.empty:
 
 
             headers = {
-                'x-rapidapi-key': "8b0ab77af5mshc73fbfdbec7278ap1422fejsnb77c07072aca",
+                'x-rapidapi-key': "c299565febmshae8b8ba8255ea7ep15fe05jsn4f3b2df671a3",
                 'x-rapidapi-host': "yahoo-finance160.p.rapidapi.com",
                 'Content-Type': "application/json"
             }
