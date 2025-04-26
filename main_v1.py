@@ -57,7 +57,7 @@ st.markdown("""
 @st.cache_data
 def load_stock_data():
     try:
-        return pd.read_csv(r'D:\Downloads\deliverable\scripts\EQUITY_L1.csv')
+        return pd.read_csv(r'EQUITY_L1.csv')
     except FileNotFoundError:
         st.error("stock_data.csv not found. Please make sure the file exists in the current directory.")
         return pd.DataFrame({'Symbol': [], 'Company Name': []})
