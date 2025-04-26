@@ -1332,6 +1332,7 @@ if not df_stocks.empty:
         except Exception as e:
             st.info(f"No News Data Available or API doesn't fetching market news data")
 
+
     elif selected_view == "🏦 FII & Bulk Deals":
         st.header("🏦 FII & Bulk Deals")
         
@@ -1343,7 +1344,7 @@ if not df_stocks.empty:
         try:
             github_token = st.secrets["github_token"]
         except:
-            github_token = st.text_input("GitHub Token (Optional)", type="password")
+            github_token = st.text_input("GitHub Token (Optional)", type="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")
         
         if not repo_owner or not repo_name:
             st.warning("Please provide GitHub repository details to fetch FII data.")
@@ -1351,20 +1352,14 @@ if not df_stocks.empty:
             
         # FII Data section
         st.subheader("FII Data")
-        try:
-            # First try to fetch from local file if exists
-            try:
-                fii_data = pd.read_excel("FII_Data.xlsx")
-                st.success("Using local FII data file")
-            except:
-                # If local file doesn't exist, try GitHub
-                fii_file_content = fetch_latest_stock_screener_file(
+    # If local file doesn't exist, try GitHub
+        fii_file_content = fetch_latest_stock_screener_file(
                     repo_owner,
                     repo_name,
                     token=github_token
                 )
                 
-                if fii_file_content:
+        if fii_file_content:
                     # Create a temporary file to read Excel content
                     with open("temp_fii.xlsx", "wb") as f:
                         f.write(fii_file_content)
@@ -1374,38 +1369,26 @@ if not df_stocks.empty:
                     # Clean up temporary file
                     import os
                     os.remove("temp_fii.xlsx")
-                else:
+        else:
                     st.warning("No FII data file found. Please ensure the repository contains the correct file.")
                     st.stop()
             
-            if not fii_data.empty:
+        if not fii_data.empty:
                 st.dataframe(fii_data)
-            else:
+        else:
                 st.warning("FII data file is empty.")
-                
-        except Exception as e:
-            st.error(f"Error loading FII data: {str(e)}")
-            st.info("Please check if:")
-            st.info("1. The GitHub repository exists and is accessible")
-            st.info("2. You have provided the correct repository owner and name")
-            st.info("3. If the repository is private, you need to provide a valid GitHub token")
-            st.info("4. For deployed version, ensure you have configured GitHub token in Streamlit secrets")
+
         
         # Bulk Deals section
         st.subheader("Bulk Deals")
-        try:
-            # First try to fetch from local file if exists
-            try:
-                bulk_data = pd.read_csv("Bulk_Deals.csv")
-                st.success("Using local bulk deals file")
-            except:
-                # If local file doesn't exist, try GitHub
-                dates_to_try = [
+        
+ 
+        dates_to_try = [
                     datetime.now() - timedelta(days=i) for i in range(5)  # Try last 5 days
                 ]
                 
-                bulk_data = None
-                for date in dates_to_try:
+        bulk_data = None
+        for date in dates_to_try:
                     formatted_date = date.strftime('%d-%b-%Y')
                     file_name = f"Large-deals-BULK-{formatted_date}.csv"
                     
@@ -1432,19 +1415,11 @@ if not df_stocks.empty:
                             st.success(f"Showing bulk deals data for {formatted_date}")
                             break
             
-            if bulk_data is not None and not bulk_data.empty:
+        if bulk_data is not None and not bulk_data.empty:
                 st.dataframe(bulk_data)
-            else:
+        else:
                 st.warning("No bulk deals data available.")
                 st.info("Please ensure the repository contains bulk deals files in the correct format (Large-deals-BULK-DD-MMM-YYYY.csv)")
-            
-        except Exception as e:
-            st.error(f"Error loading bulk deals data: {str(e)}")
-            st.info("Please check if:")
-            st.info("1. The GitHub repository exists and is accessible")
-            st.info("2. You have provided the correct repository owner and name")
-            st.info("3. If the repository is private, you need to provide a valid GitHub token")
-            st.info("4. For deployed version, ensure you have configured GitHub token in Streamlit secrets")
     
     elif selected_view == "🌟 Top Performers":
         st.header("🌟 Top Performing Stocks (Trending)")
