@@ -1338,7 +1338,7 @@ if not df_stocks.empty:
         # GitHub repository details
         repo_owner = "RDE0509"  # Replace with actual GitHub username
         repo_name = "stock_analysis"        # Replace with actual repository name
-        github_token = "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"  # Optional: Configure in Streamlit secrets
+        github_token = None  # Optional: Configure in Streamlit secrets
         
         # FII Data section
         st.subheader("FII Data")
