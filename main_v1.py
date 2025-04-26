@@ -1333,85 +1333,118 @@ if not df_stocks.empty:
             st.info(f"No News Data Available or API doesn't fetching market news data")
 
     elif selected_view == "🏦 FII & Bulk Deals":
-        st.header("FII & Bulk Deals")
+        st.header("🏦 FII & Bulk Deals")
         
-        # GitHub repository details
-        repo_owner = "RDE0509"  # Replace with actual GitHub username
-        repo_name = "stock_analysis"        # Replace with actual repository name
-        github_token = None  # Optional: Configure in Streamlit secrets
+        # GitHub repository details - make these configurable
+        repo_owner = st.text_input("GitHub Repository Owner", value="RDE0509")
+        repo_name = st.text_input("GitHub Repository Name", value="stock_analysis")
         
+        # For deployed version, use Streamlit secrets
+        try:
+            github_token = st.secrets["github_token"]
+        except:
+            github_token = st.text_input("GitHub Token (Optional)", type="password")
+        
+        if not repo_owner or not repo_name:
+            st.warning("Please provide GitHub repository details to fetch FII data.")
+            st.stop()
+            
         # FII Data section
         st.subheader("FII Data")
         try:
-            # Fetch latest FII data file from GitHub
-            fii_file_content = fetch_latest_stock_screener_file(
-                repo_owner,
-                repo_name,
-                token=github_token
-            )
-            
-            if fii_file_content:
-                # Create a temporary file to read Excel content
-                with open("temp_fii.xlsx", "wb") as f:
-                    f.write(fii_file_content)
+            # First try to fetch from local file if exists
+            try:
+                fii_data = pd.read_excel("FII_Data.xlsx")
+                st.success("Using local FII data file")
+            except:
+                # If local file doesn't exist, try GitHub
+                fii_file_content = fetch_latest_stock_screener_file(
+                    repo_owner,
+                    repo_name,
+                    token=github_token
+                )
                 
-                fii_data = pd.read_excel("temp_fii.xlsx")
-                if not fii_data.empty:
-                    st.dataframe(fii_data)
+                if fii_file_content:
+                    # Create a temporary file to read Excel content
+                    with open("temp_fii.xlsx", "wb") as f:
+                        f.write(fii_file_content)
+                    
+                    fii_data = pd.read_excel("temp_fii.xlsx")
+                    
+                    # Clean up temporary file
+                    import os
+                    os.remove("temp_fii.xlsx")
                 else:
-                    st.warning("FII data file is empty.")
-                
-                # Clean up temporary file
-                import os
-                os.remove("temp_fii.xlsx")
+                    st.warning("No FII data file found. Please ensure the repository contains the correct file.")
+                    st.stop()
+            
+            if not fii_data.empty:
+                st.dataframe(fii_data)
             else:
-                st.error("Failed to fetch FII data from GitHub repository.")
+                st.warning("FII data file is empty.")
+                
         except Exception as e:
             st.error(f"Error loading FII data: {str(e)}")
+            st.info("Please check if:")
+            st.info("1. The GitHub repository exists and is accessible")
+            st.info("2. You have provided the correct repository owner and name")
+            st.info("3. If the repository is private, you need to provide a valid GitHub token")
+            st.info("4. For deployed version, ensure you have configured GitHub token in Streamlit secrets")
         
         # Bulk Deals section
         st.subheader("Bulk Deals")
         try:
-            # Get current date and previous dates (in case current date file isn't available yet)
-            dates_to_try = [
-                datetime.now() - timedelta(days=i) for i in range(5)  # Try last 5 days
-            ]
-            
-            bulk_data = None
-            for date in dates_to_try:
-                formatted_date = date.strftime('%d-%b-%Y')
-                file_name = f"Large-deals-BULK-{formatted_date}.csv"
+            # First try to fetch from local file if exists
+            try:
+                bulk_data = pd.read_csv("Bulk_Deals.csv")
+                st.success("Using local bulk deals file")
+            except:
+                # If local file doesn't exist, try GitHub
+                dates_to_try = [
+                    datetime.now() - timedelta(days=i) for i in range(5)  # Try last 5 days
+                ]
                 
-                # Fetch bulk deals file from GitHub
-                bulk_file_content = fetch_latest_file_from_github(
-                    repo_owner,
-                    repo_name,
-                    file_name,
-                    token=github_token
-                )
-                
-                if bulk_file_content:
-                    # Create a temporary file to read CSV content
-                    with open("temp_bulk.csv", "wb") as f:
-                        f.write(bulk_file_content)
+                bulk_data = None
+                for date in dates_to_try:
+                    formatted_date = date.strftime('%d-%b-%Y')
+                    file_name = f"Large-deals-BULK-{formatted_date}.csv"
                     
-                    bulk_data = pd.read_csv("temp_bulk.csv")
+                    # Fetch bulk deals file from GitHub
+                    bulk_file_content = fetch_latest_file_from_github(
+                        repo_owner,
+                        repo_name,
+                        file_name,
+                        token=github_token
+                    )
                     
-                    # Clean up temporary file
-                    import os
-                    os.remove("temp_bulk.csv")
-                    
-                    if not bulk_data.empty:
-                        st.success(f"Showing bulk deals data for {formatted_date}")
-                        break
+                    if bulk_file_content:
+                        # Create a temporary file to read CSV content
+                        with open("temp_bulk.csv", "wb") as f:
+                            f.write(bulk_file_content)
+                        
+                        bulk_data = pd.read_csv("temp_bulk.csv")
+                        
+                        # Clean up temporary file
+                        import os
+                        os.remove("temp_bulk.csv")
+                        
+                        if not bulk_data.empty:
+                            st.success(f"Showing bulk deals data for {formatted_date}")
+                            break
             
             if bulk_data is not None and not bulk_data.empty:
                 st.dataframe(bulk_data)
             else:
-                st.warning("No bulk deals data available for the recent dates.")
+                st.warning("No bulk deals data available.")
+                st.info("Please ensure the repository contains bulk deals files in the correct format (Large-deals-BULK-DD-MMM-YYYY.csv)")
             
         except Exception as e:
             st.error(f"Error loading bulk deals data: {str(e)}")
+            st.info("Please check if:")
+            st.info("1. The GitHub repository exists and is accessible")
+            st.info("2. You have provided the correct repository owner and name")
+            st.info("3. If the repository is private, you need to provide a valid GitHub token")
+            st.info("4. For deployed version, ensure you have configured GitHub token in Streamlit secrets")
     
     elif selected_view == "🌟 Top Performers":
         st.header("🌟 Top Performing Stocks (Trending)")
@@ -1507,3 +1540,219 @@ if not df_stocks.empty:
             
         except Exception as e:
                     st.warning(f"Error fetching recommendation analysis: {str(e)}")
+
+# def create_financial_metrics_chart(financial_data):
+#     try:
+#         # Convert dictionary data to DataFrame if needed
+#         if isinstance(financial_data, dict):
+#             df = pd.DataFrame([financial_data])
+#         else:
+#             df = pd.DataFrame(financial_data)
+            
+#         # Create a line chart for key financial metrics
+#         metrics_chart = alt.Chart(df.melt(
+#             id_vars=['End Date'],
+#             value_vars=['Total Revenue', 'Net Income', 'EBIT', 'Gross Profit']
+#         )).mark_line(point=True).encode(
+#             x='End Date:T',
+#             y=alt.Y('value:Q', title='Amount'),
+#             color=alt.Color('variable:N', title='Metric'),
+#             tooltip=['End Date', 'variable', 'value']
+#         ).properties(
+#             height=400,
+#             title='Key Financial Metrics Over Time'
+#         )
+        
+#         return metrics_chart
+#     except Exception as e:
+#         st.error(f"Error creating financial metrics chart: {str(e)}")
+#         return None
+
+# def create_balance_sheet_chart(balance_data):
+#     try:
+#         if isinstance(balance_data, dict):
+#             df = pd.DataFrame([balance_data])
+#         else:
+#             df = pd.DataFrame(balance_data)
+#         st.write("DEBUG: Balance Sheet DataFrame", df)  # Add this line
+
+#         # Ensure required columns exist and are numeric
+#         required_cols = ['totalAssets', 'cash', 'propertyPlantEquipment', 'intangibleAssets']
+#         for col in required_cols:
+#             if col not in df.columns:
+#                 df[col] = 0
+#             # Convert to numeric, coerce errors to NaN, then fill NaN with 0
+#             df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
+        
+#         # Also ensure 'End Date (Formatted)' is present and parseable
+#         if 'End Date (Formatted)' in df.columns:
+#             df['End Date (Formatted)'] = pd.to_datetime(df['End Date (Formatted)'], errors='coerce')
+#         else:
+#             st.warning("No 'End Date (Formatted)' column in balance sheet data.")
+#             return None
+
+#         # Remove rows where all required columns are zero (optional, for cleaner chart)
+#         if df[required_cols].sum(axis=1).eq(0).all():
+#             st.warning("No valid balance sheet data to display.")
+#             st.dataframe(df)  # Show the DataFrame for debugging
+#             return None
+
+#         # Create a stacked bar chart for assets composition
+#         assets_chart = alt.Chart(df).transform_fold(
+#             required_cols,
+#             as_=['Category', 'Value']
+#         ).mark_bar().encode(
+#             x=alt.X('End Date (Formatted):T', title='Date'),
+#             y=alt.Y('Value:Q', title='Amount'),
+#             color=alt.Color('Category:N', title='Category'),
+#             tooltip=['Category', 'Value', 'End Date (Formatted)']
+#         ).properties(
+#             height=400,
+#             title='Assets Composition Over Time'
+#         )
+        
+#         return assets_chart
+#     except Exception as e:
+#         st.error(f"Error creating balance sheet chart: {str(e)}")
+#         return None
+
+# def create_eps_trend_chart(eps_data):
+#     try:
+#         # Convert dictionary data to DataFrame if needed
+#         if isinstance(eps_data, dict):
+#             df = pd.DataFrame([eps_data])
+#         else:
+#             df = pd.DataFrame(eps_data)
+            
+#         # Create a dual-axis chart for EPS and Surprise %
+#         base = alt.Chart(df).encode(x='ReportedDate:T')
+        
+#         eps_line = base.mark_line(color='blue').encode(
+#             y=alt.Y('ReportedEPS:Q', title='EPS'),
+#             tooltip=['ReportedDate', 'ReportedEPS', 'SurprisePercent']
+#         )
+        
+#         surprise_bars = base.mark_bar(color='orange', opacity=0.5).encode(
+#             y=alt.Y('SurprisePercent:Q', title='Surprise %')
+#         )
+        
+#         combined_chart = alt.layer(eps_line, surprise_bars).resolve_scale(
+#             y='independent'
+#         ).properties(
+#             height=400,
+#             title='EPS Trend with Surprise Percentage'
+#         )
+        
+#         return combined_chart
+#     except Exception as e:
+#         st.error(f"Error creating EPS trend chart: {str(e)}")
+#         return None
+
+# def create_financial_ratios_chart(balance_data, financial_data):
+#     try:
+#         # Convert dictionary data to DataFrame if needed
+#         if isinstance(balance_data, dict):
+#             balance_df = pd.DataFrame([balance_data])
+#         else:
+#             balance_df = pd.DataFrame(balance_data)
+            
+#         if isinstance(financial_data, dict):
+#             financial_df = pd.DataFrame([financial_data])
+#         else:
+#             financial_df = pd.DataFrame(financial_data)
+        
+#         # Calculate key ratios
+#         balance_df['Current Ratio'] = balance_df['totalAssets'] / balance_df['totalLiab']
+#         balance_df['Debt to Equity'] = balance_df['totalLiab'] / balance_df['totalStockholderEquity']
+        
+#         ratios_df = balance_df[['End Date (Formatted)', 'Current Ratio', 'Debt to Equity']]
+        
+#         # Create a multi-line chart for financial ratios
+#         ratios_chart = alt.Chart(ratios_df.melt(
+#             id_vars=['End Date (Formatted)'],
+#             value_vars=['Current Ratio', 'Debt to Equity']
+#         )).mark_line(point=True).encode(
+#             x='End Date (Formatted):T',
+#             y='value:Q',
+#             color='variable:N',
+#             tooltip=['End Date (Formatted)', 'variable', 'value']
+#         ).properties(
+#             height=400,
+#             title='Key Financial Ratios Over Time'
+#         )
+        
+#         return ratios_chart
+#     except Exception as e:
+#         st.error(f"Error creating financial ratios chart: {str(e)}")
+#         return None
+
+# if __name__ == "__main__":
+#     st.title("Enhanced Stock Analysis Dashboard")
+    
+#     try:
+#         # Get the financial data from the existing API call in the Financial Data tab
+#         with st.spinner("Loading financial data..."):
+#             financial_data = fetch_api_data(f"/api/v1/markets/stock/modules?ticker={api_symbol}&module=financial-data", api_symbol, api_key=user_api_key)
+#             balance_data = fetch_api_data(f"/api/v1/markets/stock/modules?ticker={api_symbol}&module=balance-sheet", api_symbol, api_key=user_api_key)
+#             eps_data = fetch_eps_data(symbol, api_key=user_api_key)
+
+#             # Parse the data
+#             if financial_data and isinstance(financial_data, dict) and 'body' in financial_data:
+#                 if 'incomeStatementHistory' in financial_data['body']:
+#                     financial_records = parse_financial_data(financial_data['body']['incomeStatementHistory']['incomeStatementHistory'])
+#                 else:
+#                     financial_records = []
+#             else:
+#                 financial_records = []
+
+#             if balance_data and isinstance(balance_data, dict) and 'body' in balance_data:
+#                 if 'balanceSheetHistory' in balance_data['body']:
+#                     balance_records = parse_balance_sheet(balance_data['body']['balanceSheetHistory']['balanceSheetStatements'])
+#                 else:
+#                     balance_records = []
+#             else:
+#                 balance_records = []
+
+#             if eps_data:
+#                 eps_actuals, _ = parse_eps_data(eps_data)
+#             else:
+#                 eps_actuals = pd.DataFrame()
+
+#             # Create tabs for different visualizations
+#             tabs = st.tabs(["Financial Metrics", "Balance Sheet", "EPS Analysis", "Financial Ratios"])
+            
+#             with tabs[0]:
+#                 if financial_records:
+#                     financial_chart = create_financial_metrics_chart(financial_records)
+#                     if financial_chart:
+#                         st.altair_chart(financial_chart, use_container_width=True)
+#                 else:
+#                     st.warning("No financial metrics data available")
+            
+#             with tabs[1]:
+#                 if balance_records:
+#                     balance_chart = create_balance_sheet_chart(balance_records)
+#                     if balance_chart:
+#                         st.altair_chart(balance_chart, use_container_width=True)
+#                         st.write("DEBUG: Balance Sheet DataFrame", df_bs)
+#                 else:
+#                     st.warning("No balance sheet data available")
+            
+#             with tabs[2]:
+#                 if not eps_actuals.empty:
+#                     eps_chart = create_eps_trend_chart(eps_actuals)
+#                     if eps_chart:
+#                         st.altair_chart(eps_chart, use_container_width=True)
+#                 else:
+#                     st.warning("No EPS data available")
+            
+#             with tabs[3]:
+#                 if balance_records and financial_records:
+#                     ratios_chart = create_financial_ratios_chart(balance_records, financial_records)
+#                     if ratios_chart:
+#                         st.altair_chart(ratios_chart, use_container_width=True)
+#                 else:
+#                     st.warning("No financial ratios data available")
+
+#     except Exception as e:
+#         st.error(f"Error in visualization: {str(e)}")
