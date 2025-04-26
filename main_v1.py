@@ -1342,9 +1342,9 @@ if not df_stocks.empty:
         
         # For deployed version, use Streamlit secrets
         try:
-            github_token = st.secrets["GITHUB_TOKEN"]
+            github_token = st.secrets["github_token"]
         except:
-            github_token = st.text_input("GitHub Token (Optional)", type= None)
+            github_token = st.text_input("GitHub Token (Optional)", type= "password")
         
         if not repo_owner or not repo_name:
             st.warning("Please provide GitHub repository details to fetch FII data.")
